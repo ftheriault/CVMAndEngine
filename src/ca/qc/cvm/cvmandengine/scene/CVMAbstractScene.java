@@ -52,7 +52,7 @@ public abstract class CVMAbstractScene extends Scene {
 	
 	private CVMGameActivity gameActivity;
 	private CVMTextureManager cvmTextureManager;
-	private VertexBufferObjectManager vertexBufferObjectManager; 
+	protected VertexBufferObjectManager vertexBufferObjectManager; 
 
 	private String backgroundPath;
     public static TextureRegion backgroundTexture;
@@ -154,7 +154,7 @@ public abstract class CVMAbstractScene extends Scene {
 		Sprite tmp = null;
 		
 		if (cvmTextureManager.isTiled(sprite.getTextureId())) {
-			tmp = new AnimatedSprite(sprite.getPosX(), sprite.getPosY(), ((TiledTextureRegion)sprite.getTextureRegion()).deepCopy(), vertexBufferObjectManager) {
+			tmp = new AnimatedSprite(sprite.getPosX(), sprite.getPosY(), sprite.getWidth(), sprite.getHeight(), ((TiledTextureRegion)sprite.getTextureRegion()).deepCopy(), vertexBufferObjectManager) {
 				@Override
 				public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 					if (sprite instanceof TouchAreaListener) {
