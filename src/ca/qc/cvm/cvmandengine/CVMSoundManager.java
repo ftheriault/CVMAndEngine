@@ -1,4 +1,4 @@
-package ca.qc.cvm.cvmandengine.entity;
+package ca.qc.cvm.cvmandengine;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,6 +8,7 @@ import org.andengine.audio.sound.Sound;
 import org.andengine.audio.sound.SoundFactory;
 import org.andengine.audio.sound.SoundManager;
 
+import ca.qc.cvm.cvmandengine.entity.CVMSound;
 import ca.qc.cvm.cvmandengine.ui.CVMGameActivity;
 
 public abstract class CVMSoundManager {

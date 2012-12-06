@@ -11,7 +11,8 @@ import org.andengine.ui.activity.SimpleBaseGameActivity;
 
 import android.util.Log;
 
-import ca.qc.cvm.cvmandengine.entity.CVMSoundManager;
+import ca.qc.cvm.cvmandengine.CVMSoundManager;
+import ca.qc.cvm.cvmandengine.CVMTextureManager;
 import ca.qc.cvm.cvmandengine.scene.CVMAbstractScene;
 
 public class CVMGameActivity extends SimpleBaseGameActivity {
@@ -24,10 +25,15 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
     private int currentSceneId;
     
     private CVMSoundManager soundManager;
+    private CVMTextureManager textureManager;
 	
 	public void setSceneList(List<CVMAbstractScene> sceneList) {
 		this.sceneList = sceneList;
 		currentSceneId = 0;
+	}
+	
+	public void setTextureManager(CVMTextureManager textureManager) {
+		this.textureManager = textureManager;
 	}
 	
 	public void setSoundManager(CVMSoundManager soundManager) {
@@ -81,8 +87,10 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
 	@Override
 	protected void onCreateResources() {
 		try {
+			textureManager.load(this.mEngine.getTextureManager(), this);
+			
 			for (CVMAbstractScene scene : sceneList) {
-				scene.load(this.mEngine.getTextureManager(), this, this.mEngine);
+				scene.load(this.mEngine.getTextureManager(), this, this.mEngine, textureManager);
 			}
 			
 			soundManager.load(this.mEngine.getSoundManager(), this);

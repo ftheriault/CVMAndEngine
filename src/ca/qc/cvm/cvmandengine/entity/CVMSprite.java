@@ -8,17 +8,17 @@ public abstract class CVMSprite {
 	private float posY;
 	private int width;
 	private int height;
-	private String texturePath;
+	private int textureId;
 	
 	private TextureRegion textureRegion;
 	private Sprite sprite;
 	
-	public CVMSprite(float posX, float posY, int width, int height, String texturePath) {
+	public CVMSprite(float posX, float posY, int width, int height, int textureId) {
 		this.posX = posX;
 		this.posY = posY;
 		this.width = width;
 		this.height = height;
-		this.texturePath = texturePath;
+		this.textureId = textureId;
 	}
 	
 	public TextureRegion getTextureRegion() {
@@ -53,7 +53,7 @@ public abstract class CVMSprite {
 		return posY;
 	}
 
-	public String getTexturePath() {
-		return texturePath;
+	public int getTextureId() {
+		return textureId;
 	}
 }

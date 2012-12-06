@@ -24,6 +24,7 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.HorizontalAlign;
 import org.andengine.util.color.Color;
 
+import ca.qc.cvm.cvmandengine.CVMTextureManager;
 import ca.qc.cvm.cvmandengine.entity.CVMSprite;
 import ca.qc.cvm.cvmandengine.entity.CVMText;
 import ca.qc.cvm.cvmandengine.entity.ManagedUpdateListener;
@@ -66,7 +67,7 @@ public abstract class CVMAbstractScene extends Scene {
 		textList.add(sprite);
 	}
 
-	public void load(TextureManager manager, Context context, Engine engine) throws IllegalStateException, IOException {
+	public void load(TextureManager manager, Context context, Engine engine, CVMTextureManager cvmTextureManager) throws IllegalStateException, IOException {
 		// Load background texture
 		BitmapTextureAtlas mBackgroundTexture = new BitmapTextureAtlas(manager, CVMGameActivity.CAMERA_WIDTH, CVMGameActivity.CAMERA_HEIGHT, TextureOptions.DEFAULT);
 		backgroundTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mBackgroundTexture, context, backgroundPath, 0, 0);
@@ -80,13 +81,8 @@ public abstract class CVMAbstractScene extends Scene {
 	    }
 
 	    // Load textures for each sprite in scene
-	    for (CVMSprite sprite : spriteList) {
-	    	BitmapTextureAtlas textureAtlas = new BitmapTextureAtlas(manager, sprite.getWidth(), sprite.getHeight());
-	    	TextureRegion spriteRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureAtlas, context, sprite.getTexturePath(), 0, 0);
-	    	
-	    	textureAtlas.load();
-		    
-	    	sprite.setTextureRegion(spriteRegion);
+	    for (CVMSprite sprite : spriteList) {		    
+	    	sprite.setTextureRegion(cvmTextureManager.getTextureById(sprite.getTextureId()));
 	    }
 	    
 	    for (CVMText text : textList) {
