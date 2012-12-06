@@ -62,6 +62,8 @@ public abstract class CVMAbstractScene extends Scene {
     private List<CVMText> textList;
     
     private List<IEntity> entitiesToRemove;
+    
+    private Font defaultFont;
 	
 	public CVMAbstractScene(String backgroundPath, int id) {
 		this.backgroundPath = backgroundPath;
@@ -98,7 +100,21 @@ public abstract class CVMAbstractScene extends Scene {
 	}
 	
 	public void addText(CVMText sprite) {
-		textList.add(sprite);
+		if (state == State.Stopped) {
+			textList.add(sprite);
+		}
+		else if (state == State.Started) {
+			this.addTextToScene(sprite);
+		}
+	}
+	
+	public void removeText(CVMText sprite) {
+		if (state == State.Stopped) {
+			textList.remove(sprite);
+		}
+		else if (state == State.Started) {
+			this.removeTextFromScene(sprite.getText());
+		}
 	}
 	
 	public abstract void sceneTouched(TouchEvent pSceneTouchEvent);
@@ -139,13 +155,38 @@ public abstract class CVMAbstractScene extends Scene {
 	    	music.setLooping(musicLoop);
 	    }
 	    
+	    BitmapTextureAtlas defaultFontTexture = new BitmapTextureAtlas(engine.getTextureManager(), 256, 256, TextureOptions.BILINEAR);
+    	defaultFont = new Font(engine.getFontManager(), defaultFontTexture, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 32, true, Color.WHITE);
+    	defaultFont.load();
+	    
 	    for (CVMText text : textList) {
-	    	//Font font = FontFactory.create(engine.getFontManager(), engine.getTextureManager(), 256, 256, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), text.getSize());
-	    	BitmapTextureAtlas mFontTexture = new BitmapTextureAtlas(engine.getTextureManager(), 256, 256, TextureOptions.BILINEAR);
-	    	Font font = new Font(engine.getFontManager(), mFontTexture, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 32, true, Color.WHITE);
-	    	font.load();
-	    	text.setFont(font);
+	    	text.setFont(defaultFont);
 	    }
+	}
+	
+	private void addTextToScene(final CVMText text) {
+		runnableRemoveHandler.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+            	text.setFont(defaultFont);
+            	
+			    Text txt = new Text(text.getPosX(), text.getPosY(), text.getFont(), text.getDisplayText(), new TextOptions(HorizontalAlign.LEFT), gameActivity.getVertexBufferObjectManager());
+		    	txt.setColor(text.getColor());
+		    	text.setText(txt);
+		    	
+		    	CVMAbstractScene.this.attachChild(txt);
+            }
+		});
+		
+	}
+	
+	private void removeTextFromScene(final Text text) {
+		runnableRemoveHandler.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+				CVMAbstractScene.this.detachChild(text);
+            }
+		});
 	}
 	
 	private void addSpriteToScene(final CVMSprite sprite) {
@@ -278,7 +319,7 @@ public abstract class CVMAbstractScene extends Scene {
 		});
 	}
 	
-	public abstract void started();
+	public abstract void starting();
 	
 	public void start() {
 		populate(); 
@@ -287,7 +328,7 @@ public abstract class CVMAbstractScene extends Scene {
 			music.play();
 		}
 		
-		started();
+		starting();
 
 		state = State.Started;
 		Log.i("CVMAndEngine", "Scene " + id +" started");
