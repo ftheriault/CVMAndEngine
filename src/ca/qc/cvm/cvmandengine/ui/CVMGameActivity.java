@@ -11,6 +11,7 @@ import org.andengine.ui.activity.SimpleBaseGameActivity;
 
 import android.util.Log;
 
+import ca.qc.cvm.cvmandengine.entity.CVMSoundManager;
 import ca.qc.cvm.cvmandengine.scene.CVMAbstractScene;
 
 public class CVMGameActivity extends SimpleBaseGameActivity {
@@ -20,13 +21,20 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
     private Camera mCamera;
     
     private List<CVMAbstractScene> sceneList;
+    private int currentSceneId;
+    
+    private CVMSoundManager soundManager;
 	
 	public void setSceneList(List<CVMAbstractScene> sceneList) {
 		this.sceneList = sceneList;
+		currentSceneId = 0;
 	}
 	
-	public void changeScene(int id) {
-		((CVMAbstractScene)this.mEngine.getScene()).stop();
+	public void setSoundManager(CVMSoundManager soundManager) {
+		this.soundManager = soundManager;
+	}
+	
+	public void changeScene(int id, boolean isChildScene) {
 		
 		CVMAbstractScene scene = null;
 		
@@ -38,11 +46,19 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
 		}
 		
 		if (scene != null) {
+			((CVMAbstractScene)this.mEngine.getScene()).stop();
+			
 			scene.populate(getVertexBufferObjectManager(), this);
 			
-			this.mEngine.getScene().setChildScene(scene);
-			
+			if (isChildScene) {
+				this.mEngine.getScene().setChildScene(scene);
+			}
+			else if (this.mEngine.getScene().getParent() != null){
+				((Scene)this.mEngine.getScene().getParent()).setChildScene(scene);
+			}
 	        scene.start();
+	        
+			currentSceneId = id;
 		}
 		else {
 			Log.w("CVMGameEngine", "Scene not found");
@@ -64,16 +80,23 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
 
 	@Override
 	protected void onCreateResources() {
-		for (CVMAbstractScene scene : sceneList) {
-			scene.load(this.mEngine.getTextureManager(), this, this.mEngine);
+		try {
+			for (CVMAbstractScene scene : sceneList) {
+				scene.load(this.mEngine.getTextureManager(), this, this.mEngine);
+			}
+			
+			soundManager.load(this.mEngine.getSoundManager(), this);
+
+		} catch (Exception e) {
+			Log.e("CVMAndEngine", "CVMAbstractScene", e);
 		}
 	}
 
 	@Override
 	protected Scene onCreateScene() {
-        sceneList.get(0).populate(getVertexBufferObjectManager(), this);
-        this.mEngine.setScene(sceneList.get(0));
-        sceneList.get(0).start();
+        sceneList.get(currentSceneId).populate(getVertexBufferObjectManager(), this);
+        this.mEngine.setScene(sceneList.get(currentSceneId));
+        sceneList.get(currentSceneId).start();
         
         return this.mEngine.getScene();
 	}

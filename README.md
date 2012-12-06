@@ -1,3 +1,10 @@
+# CVMAndEngine
+
+Fork defeating performance for ease of use. 
+
+Easier to teach this way ;)
+
+
 # AndEngine
 
 ## Building

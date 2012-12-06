@@ -1,3 +1,7 @@
+## For CVMAndEngine
+
+* Frederic Theriault <fred.theriault@gmail.com>
+
 ## Lead Developer:
 
 * Nicolas Gramlich <nicolasgramlich@gmail.com>, <ngramlich@zynga.com>
