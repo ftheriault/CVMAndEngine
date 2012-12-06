@@ -1,6 +1,7 @@
 package ca.qc.cvm.cvmandengine.entity;
 
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.opengl.texture.region.BaseTextureRegion;
 import org.andengine.opengl.texture.region.TextureRegion;
 
 public abstract class CVMSprite {
@@ -10,7 +11,7 @@ public abstract class CVMSprite {
 	private int height;
 	private int textureId;
 	
-	private TextureRegion textureRegion;
+	private BaseTextureRegion textureRegion;
 	private Sprite sprite;
 	
 	public CVMSprite(float posX, float posY, int width, int height, int textureId) {
@@ -21,11 +22,11 @@ public abstract class CVMSprite {
 		this.textureId = textureId;
 	}
 	
-	public TextureRegion getTextureRegion() {
+	public BaseTextureRegion getTextureRegion() {
 		return textureRegion;
 	}
 	
-	public void setTextureRegion(TextureRegion textureRegion) {
+	public void setTextureRegion(BaseTextureRegion textureRegion) {
 		this.textureRegion = textureRegion;
 	}
 	

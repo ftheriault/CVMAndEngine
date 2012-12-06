@@ -12,6 +12,7 @@ import org.andengine.entity.IEntity;
 import org.andengine.entity.scene.ITouchArea;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.SpriteBackground;
+import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TextOptions;
@@ -23,6 +24,7 @@ import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.region.TextureRegion;
+import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.HorizontalAlign;
 import org.andengine.util.color.Color;
@@ -149,28 +151,56 @@ public abstract class CVMAbstractScene extends Scene {
 	private void addSpriteToScene(final CVMSprite sprite) {
     	sprite.setTextureRegion(cvmTextureManager.getTextureById(sprite.getTextureId()));
     	
-		Sprite tmp = new Sprite(sprite.getPosX(), sprite.getPosY(), sprite.getWidth(), sprite.getHeight(), sprite.getTextureRegion(), vertexBufferObjectManager) {
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				if (sprite instanceof TouchAreaListener) {
-					if (CVMAbstractScene.this.state == State.Started) {
-						((TouchAreaListener)sprite).onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY, gameActivity, CVMAbstractScene.this);
+		Sprite tmp = null;
+		
+		if (cvmTextureManager.isTiled(sprite.getTextureId())) {
+			tmp = new AnimatedSprite(sprite.getPosX(), sprite.getPosY(), ((TiledTextureRegion)sprite.getTextureRegion()).deepCopy(), vertexBufferObjectManager) {
+				@Override
+				public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+					if (sprite instanceof TouchAreaListener) {
+						if (CVMAbstractScene.this.state == State.Started) {
+							((TouchAreaListener)sprite).onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY, gameActivity, CVMAbstractScene.this);
+						}
 					}
-				}
-				return true;
-			};
-			
-			@Override
-		    protected void onManagedUpdate(float pSecondsElapsed) {
-				if (sprite instanceof ManagedUpdateListener) {
-					if (CVMAbstractScene.this.state == State.Started) {
-						((ManagedUpdateListener)sprite).managedUpdate(pSecondsElapsed);
-					}
-				}
+					return true;
+				};
 				
-				super.onManagedUpdate(pSecondsElapsed);
-		    }
-		};
+				@Override
+			    protected void onManagedUpdate(float pSecondsElapsed) {
+					if (sprite instanceof ManagedUpdateListener) {
+						if (CVMAbstractScene.this.state == State.Started) {
+							((ManagedUpdateListener)sprite).managedUpdate(pSecondsElapsed, CVMAbstractScene.this);
+						}
+					}
+					
+					super.onManagedUpdate(pSecondsElapsed);
+			    }
+			};
+		}
+		else {
+			tmp = new Sprite(sprite.getPosX(), sprite.getPosY(), sprite.getWidth(), sprite.getHeight(), sprite.getTextureRegion(), vertexBufferObjectManager) {
+				@Override
+				public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+					if (sprite instanceof TouchAreaListener) {
+						if (CVMAbstractScene.this.state == State.Started) {
+							((TouchAreaListener)sprite).onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY, gameActivity, CVMAbstractScene.this);
+						}
+					}
+					return true;
+				};
+				
+				@Override
+			    protected void onManagedUpdate(float pSecondsElapsed) {
+					if (sprite instanceof ManagedUpdateListener) {
+						if (CVMAbstractScene.this.state == State.Started) {
+							((ManagedUpdateListener)sprite).managedUpdate(pSecondsElapsed, CVMAbstractScene.this);
+						}
+					}
+					
+					super.onManagedUpdate(pSecondsElapsed);
+			    }
+			};
+		}
 		
 		sprite.setSprite(tmp);
 		this.attachChild(tmp);
