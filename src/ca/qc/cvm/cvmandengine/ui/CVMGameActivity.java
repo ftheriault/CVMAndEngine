@@ -29,7 +29,7 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
 	
 	public void setSceneList(List<CVMAbstractScene> sceneList) {
 		this.sceneList = sceneList;
-		currentSceneId = 0;
+		currentSceneId = sceneList.get(0).getId();;
 	}
 	
 	public void setTextureManager(CVMTextureManager textureManager) {
@@ -52,9 +52,12 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
 		}
 		
 		if (scene != null) {
-			((CVMAbstractScene)this.mEngine.getScene()).stop();
-			
-			scene.populate(getVertexBufferObjectManager(), this);
+			for (CVMAbstractScene sceneTmp : sceneList) {
+				if (sceneTmp.getId() == currentSceneId) {
+					sceneTmp.stop();
+					break;
+				}
+			}
 			
 			if (isChildScene) {
 				this.mEngine.getScene().setChildScene(scene);
@@ -62,6 +65,7 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
 			else if (this.mEngine.getScene().getParent() != null){
 				((Scene)this.mEngine.getScene().getParent()).setChildScene(scene);
 			}
+			
 	        scene.start();
 	        
 			currentSceneId = id;
@@ -90,6 +94,7 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
 			textureManager.load(this.mEngine.getTextureManager(), this);
 			
 			for (CVMAbstractScene scene : sceneList) {
+				scene.prepare(getVertexBufferObjectManager(), this);
 				scene.load(this.mEngine.getTextureManager(), this, this.mEngine, textureManager);
 			}
 			
@@ -102,9 +107,18 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
 
 	@Override
 	protected Scene onCreateScene() {
-        sceneList.get(currentSceneId).populate(getVertexBufferObjectManager(), this);
-        this.mEngine.setScene(sceneList.get(currentSceneId));
-        sceneList.get(currentSceneId).start();
+		CVMAbstractScene scene = null;
+		
+		for (CVMAbstractScene tmp : sceneList) {
+			if (tmp.getId() == currentSceneId) {
+				scene = tmp;
+				break;
+			}
+		}
+		
+		scene.prepare(getVertexBufferObjectManager(), this);
+		scene.start();
+        this.mEngine.setScene(scene);
         
         return this.mEngine.getScene();
 	}
@@ -115,6 +129,9 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
         
         if(scene != null && scene.hasChildScene()){
         	((CVMAbstractScene)scene.getChildScene()).stop();
+        	
+        	currentSceneId = ((CVMAbstractScene)this.mEngine.getScene()).getId(); 
+        	
         	((CVMAbstractScene)this.mEngine.getScene()).start();
             scene.back();
         }
