@@ -98,7 +98,9 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
 				scene.load(this.mEngine.getTextureManager(), this, this.mEngine, textureManager);
 			}
 			
-			soundManager.load(this.mEngine.getSoundManager(), this);
+			if (soundManager != null) {
+				soundManager.load(this.mEngine.getSoundManager(), this);
+			}
 
 		} catch (Exception e) {
 			Log.e("CVMAndEngine", "CVMAbstractScene", e);
