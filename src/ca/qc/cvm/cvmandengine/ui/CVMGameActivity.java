@@ -26,14 +26,14 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
     
     private CVMSoundManager soundManager;
     private CVMTextureManager textureManager;
+    
+    public CVMGameActivity(CVMTextureManager textureManager) {
+    	this.textureManager = textureManager;
+    }
 	
 	public void setSceneList(List<CVMAbstractScene> sceneList) {
 		this.sceneList = sceneList;
 		currentSceneId = sceneList.get(0).getId();;
-	}
-	
-	public void setTextureManager(CVMTextureManager textureManager) {
-		this.textureManager = textureManager;
 	}
 	
 	public void setSoundManager(CVMSoundManager soundManager) {
