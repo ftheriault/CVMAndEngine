@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.andengine.opengl.texture.TextureManager;
+import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.region.BaseTextureRegion;
@@ -30,7 +31,7 @@ public class CVMTextureManager {
 		    	textureAtlas.load();
 			}
 			else {
-				BitmapTextureAtlas textureAtlas = new BitmapTextureAtlas(textManager, texture.getWidth(), texture.getHeight());
+				BitmapTextureAtlas textureAtlas = new BitmapTextureAtlas(textManager, texture.getWidth(), texture.getHeight(), TextureOptions.BILINEAR);
 		    	TextureRegion spriteRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureAtlas, context, texture.getTexturePath(), 0, 0);
 		    	
 		    	texture.setTextureRegion(spriteRegion);

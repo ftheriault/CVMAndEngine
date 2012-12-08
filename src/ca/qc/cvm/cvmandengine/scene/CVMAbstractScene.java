@@ -327,10 +327,11 @@ public abstract class CVMAbstractScene extends Scene {
 		if (music != null) {
 			music.play();
 		}
+
+		state = State.Started;
 		
 		starting();
 
-		state = State.Started;
 		Log.i("CVMAndEngine", "Scene " + id +" started");
 	}
 	
@@ -357,5 +358,9 @@ public abstract class CVMAbstractScene extends Scene {
 	
 	public int getId() {
 		return id;
+	}
+	
+	public VertexBufferObjectManager getVertexBufferObjectManager() {
+		return vertexBufferObjectManager;
 	}
 }
