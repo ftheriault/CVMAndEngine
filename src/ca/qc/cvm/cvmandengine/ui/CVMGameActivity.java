@@ -33,15 +33,14 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
 	
 	public void setSceneList(List<CVMAbstractScene> sceneList) {
 		this.sceneList = sceneList;
-		currentSceneId = sceneList.get(0).getId();;
+		currentSceneId = sceneList.get(0).getId();
 	}
 	
 	public void setSoundManager(CVMSoundManager soundManager) {
 		this.soundManager = soundManager;
 	}
-	
-	public void changeScene(int id, boolean isChildScene) {
-		
+
+	public void changeScene(int id) {
 		CVMAbstractScene scene = null;
 		
 		for (CVMAbstractScene sceneTmp : sceneList) {
@@ -55,15 +54,52 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
 			for (CVMAbstractScene sceneTmp : sceneList) {
 				if (sceneTmp.getId() == currentSceneId) {
 					sceneTmp.stop();
+					sceneTmp.clearChildScene();
+					break;
+				}
+			}
+		}
+
+		scene.clearChildScene();
+        scene.start();
+        
+		currentSceneId = id;
+		
+		Log.i("CVMAndEngine", "Set main scene" + id);
+		this.mEngine.setScene(scene);
+	}
+	public void changeScene(int id, boolean isChildScene) {
+		CVMAbstractScene scene = null;
+		
+		for (CVMAbstractScene sceneTmp : sceneList) {
+			if (sceneTmp.getId() == id) {
+				scene = sceneTmp;
+				break;
+			}
+		}
+		
+		if (scene != null) {
+			CVMAbstractScene currentScene = null;
+			
+			for (CVMAbstractScene sceneTmp : sceneList) {
+				if (sceneTmp.getId() == currentSceneId) {
+					sceneTmp.stop();
+					currentScene = sceneTmp;
 					break;
 				}
 			}
 			
 			if (isChildScene) {
-				this.mEngine.getScene().setChildScene(scene);
+				Log.i("CVMAndEngine", "Added child scene :" + currentSceneId +" -> " + id);
+				currentScene.setChildScene(scene);
 			}
-			else if (this.mEngine.getScene().getParent() != null){
-				((Scene)this.mEngine.getScene().getParent()).setChildScene(scene);
+			else if (currentScene!= null && currentScene.getParentScene() != null){
+				Log.i("CVMAndEngine", "Added scene :" + currentSceneId +" -> " + id);
+				((Scene)currentScene.getParentScene()).setChildScene(scene);
+			}
+			else {
+				Log.i("CVMAndEngine", "Set main scene" + id);
+				this.mEngine.setScene(scene);
 			}
 			
 	        scene.start();
@@ -127,15 +163,26 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
 	
     @Override
     public void onBackPressed() {
-        Scene scene = this.mEngine.getScene();
-        
-        if(scene != null && scene.hasChildScene()){
-        	((CVMAbstractScene)scene.getChildScene()).stop();
+		Scene scene = null;
+		
+		for (CVMAbstractScene tmp : sceneList) {
+			if (tmp.getId() == currentSceneId) {
+				scene = tmp;
+				break;
+			}
+		}
+		
+		if (scene == null) {
+			Log.i("CVMAndEngine", "Scene was not found, quitting");
+		}
+		        
+        if(scene != null && scene.getParentScene() != null){
+        	Log.i("CVMAndEngine", "Back pressed, going to parent");
+        	((CVMAbstractScene)scene).stop();
         	
-        	currentSceneId = ((CVMAbstractScene)this.mEngine.getScene()).getId(); 
-        	
-        	((CVMAbstractScene)this.mEngine.getScene()).start();
-            scene.back();
+        	currentSceneId = ((CVMAbstractScene)scene.getParentScene()).getId(); 
+        	scene.getParentScene().clearChildScene();
+        	((CVMAbstractScene)scene.getParentScene()).start();
         }
         else{
             this.finish();
@@ -147,6 +194,7 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
     	super.onPause();
 
     	Scene scene = this.mEngine.getScene();
+    	
         if(scene != null && scene.hasChildScene()){
         	((CVMAbstractScene)scene.getChildScene()).stop();
         }

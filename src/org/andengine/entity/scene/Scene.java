@@ -128,6 +128,10 @@ public class Scene extends Entity {
 	private void setParentScene(final Scene pParentScene) {
 		this.mParentScene = pParentScene;
 	}
+	
+	public Scene getParentScene() {
+		return this.mParentScene;
+	}
 
 	public boolean hasChildScene() {
 		return this.mChildScene != null;

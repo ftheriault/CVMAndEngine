@@ -50,7 +50,7 @@ public abstract class CVMAbstractScene extends Scene {
 	private String musicPath;
 	private boolean musicLoop;
 	
-	private CVMGameActivity gameActivity;
+	protected CVMGameActivity gameActivity;
 	private CVMTextureManager cvmTextureManager;
 	protected VertexBufferObjectManager vertexBufferObjectManager; 
 
@@ -156,11 +156,13 @@ public abstract class CVMAbstractScene extends Scene {
 	    }
 	    
 	    BitmapTextureAtlas defaultFontTexture = new BitmapTextureAtlas(engine.getTextureManager(), 256, 256, TextureOptions.BILINEAR);
-    	defaultFont = new Font(engine.getFontManager(), defaultFontTexture, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 32, true, Color.WHITE);
+	    defaultFont = new Font(engine.getFontManager(), defaultFontTexture, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 32, true, Color.BLACK);
     	defaultFont.load();
 	    
 	    for (CVMText text : textList) {
-	    	text.setFont(defaultFont);
+	    	Font customFont = new Font(engine.getFontManager(), defaultFontTexture, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), text.getSize(), true, text.getColor());
+	    	customFont.load();
+	    	text.setFont(customFont);
 	    }
 	}
 	
@@ -168,7 +170,9 @@ public abstract class CVMAbstractScene extends Scene {
 		runnableRemoveHandler.postRunnable(new Runnable() {
             @Override
             public void run() {
-            	text.setFont(defaultFont);
+            	if (text.getFont() == null) {
+            		text.setFont(defaultFont);
+            	}
             	
 			    Text txt = new Text(text.getPosX(), text.getPosY(), text.getFont(), text.getDisplayText(), new TextOptions(HorizontalAlign.LEFT), gameActivity.getVertexBufferObjectManager());
 		    	txt.setColor(text.getColor());
@@ -210,7 +214,7 @@ public abstract class CVMAbstractScene extends Scene {
 			    protected void onManagedUpdate(float pSecondsElapsed) {
 					if (sprite instanceof ManagedUpdateListener) {
 						if (CVMAbstractScene.this.state == State.Started) {
-							((ManagedUpdateListener)sprite).managedUpdate(pSecondsElapsed, CVMAbstractScene.this);
+							((ManagedUpdateListener)sprite).managedUpdate(pSecondsElapsed, gameActivity, CVMAbstractScene.this);
 						}
 					}
 					
@@ -234,7 +238,7 @@ public abstract class CVMAbstractScene extends Scene {
 			    protected void onManagedUpdate(float pSecondsElapsed) {
 					if (sprite instanceof ManagedUpdateListener) {
 						if (CVMAbstractScene.this.state == State.Started) {
-							((ManagedUpdateListener)sprite).managedUpdate(pSecondsElapsed, CVMAbstractScene.this);
+							((ManagedUpdateListener)sprite).managedUpdate(pSecondsElapsed, gameActivity, CVMAbstractScene.this);
 						}
 					}
 					
@@ -246,7 +250,7 @@ public abstract class CVMAbstractScene extends Scene {
 		sprite.setSprite(tmp);
 		this.attachChild(tmp);
 		
-		Log.i("CVMBalls", "Scene #" + CVMAbstractScene.this.getId() + " added an entity");
+		Log.i("CVMAndEngine", "Scene #" + CVMAbstractScene.this.getId() + " added an entity");
 		
 		if (sprite instanceof TouchAreaListener) {
 			this.registerTouchArea(tmp);
@@ -286,7 +290,7 @@ public abstract class CVMAbstractScene extends Scene {
 						CVMAbstractScene.this.unregisterTouchArea((Sprite)s);
 					}
 					
-					Log.i("CVMBalls", "Scene #" + CVMAbstractScene.this.getId() + " removed an entity");
+					Log.i("CVMAndEngine", "Scene #" + CVMAbstractScene.this.getId() + " removed an entity");
 					
 					CVMAbstractScene.this.detachChild(s);
 				}
