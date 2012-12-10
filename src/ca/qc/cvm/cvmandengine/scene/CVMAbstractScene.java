@@ -236,7 +236,6 @@ public abstract class CVMAbstractScene extends Scene {
 									
 									if (this.collidesWith((Sprite)CVMAbstractScene.this.getChildByIndex(i))) {
 										((CollisionListener)sprite).collidedWith(gameActivity, CVMAbstractScene.this, tmp);
-										break;
 									}
 								}
 							}
@@ -276,7 +275,6 @@ public abstract class CVMAbstractScene extends Scene {
 									
 									if (this.collidesWith((Sprite)CVMAbstractScene.this.getChildByIndex(i))) {
 										((CollisionListener)sprite).collidedWith(gameActivity, CVMAbstractScene.this, tmp);
-										break;
 									}
 								}
 							}
@@ -370,6 +368,7 @@ public abstract class CVMAbstractScene extends Scene {
 		populate(); 
 		
 		if (music != null) {
+			music.seekTo(0);
 			music.play();
 		}
 

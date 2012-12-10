@@ -7,6 +7,8 @@ import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.scene.Scene;
+import org.andengine.input.touch.controller.MultiTouch;
+import org.andengine.input.touch.controller.MultiTouchController;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 
 import android.util.Log;
@@ -69,6 +71,7 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
 		Log.i("CVMAndEngine", "Set main scene" + id);
 		this.mEngine.setScene(scene);
 	}
+	
 	public void changeScene(int id, boolean isChildScene) {
 		CVMAbstractScene scene = null;
 		
@@ -128,6 +131,11 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
 	@Override
 	protected void onCreateResources() {
 		try {
+	    	
+	    	if(MultiTouch.isSupported(this)) {
+	    		mEngine.setTouchController(new MultiTouchController());
+	    	}
+	    	
 			textureManager.load(this.mEngine.getTextureManager(), this);
 			
 			for (CVMAbstractScene scene : sceneList) {
