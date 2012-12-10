@@ -56,5 +56,8 @@ public class CVMText {
 
 	public void setText(Text text) {
 		this.text = text;
+		if (text != null) {
+			text.setUserData(this);
+		}
 	}
 }

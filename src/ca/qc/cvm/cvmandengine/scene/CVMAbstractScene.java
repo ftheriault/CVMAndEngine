@@ -199,7 +199,7 @@ public abstract class CVMAbstractScene extends Scene {
 		Sprite tmp = null;
 		
 		if (cvmTextureManager.isTiled(sprite.getTextureId())) {
-			tmp = new AnimatedSprite(sprite.getPosX(), sprite.getPosY(), sprite.getWidth(), sprite.getHeight(), ((TiledTextureRegion)sprite.getTextureRegion()).deepCopy(), vertexBufferObjectManager) {
+			tmp = new AnimatedSprite(sprite.getInitialX(), sprite.getInitialY(), sprite.getWidth(), sprite.getHeight(), ((TiledTextureRegion)sprite.getTextureRegion()).deepCopy(), vertexBufferObjectManager) {
 				@Override
 				public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 					if (sprite instanceof TouchAreaListener) {
@@ -223,7 +223,7 @@ public abstract class CVMAbstractScene extends Scene {
 			};
 		}
 		else {
-			tmp = new Sprite(sprite.getPosX(), sprite.getPosY(), sprite.getWidth(), sprite.getHeight(), sprite.getTextureRegion(), vertexBufferObjectManager) {
+			tmp = new Sprite(sprite.getInitialX(), sprite.getInitialY(), sprite.getWidth(), sprite.getHeight(), sprite.getTextureRegion(), vertexBufferObjectManager) {
 				@Override
 				public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 					if (sprite instanceof TouchAreaListener) {
