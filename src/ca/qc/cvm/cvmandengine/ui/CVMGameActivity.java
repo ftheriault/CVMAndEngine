@@ -219,7 +219,7 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
 			}
 		}
 		
-		if (scene.getState() == State.Started) {
+		if (scene != null && scene.getState() == State.Started) {
 			scene.playMusic();
 		}
     }
