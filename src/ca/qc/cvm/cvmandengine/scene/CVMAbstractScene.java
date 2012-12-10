@@ -32,6 +32,7 @@ import org.andengine.util.color.Color;
 import ca.qc.cvm.cvmandengine.CVMTextureManager;
 import ca.qc.cvm.cvmandengine.entity.CVMSprite;
 import ca.qc.cvm.cvmandengine.entity.CVMText;
+import ca.qc.cvm.cvmandengine.entity.CollisionListener;
 import ca.qc.cvm.cvmandengine.entity.ManagedUpdateListener;
 import ca.qc.cvm.cvmandengine.entity.TouchAreaListener;
 import ca.qc.cvm.cvmandengine.ui.CVMGameActivity;
@@ -79,6 +80,10 @@ public abstract class CVMAbstractScene extends Scene {
 		
         registerUpdateHandler(runnableRemoveHandler);
 
+	}
+	
+	public State getState() {
+		return state;
 	}
 	
 	public void addSprite(CVMSprite sprite) {
@@ -221,6 +226,22 @@ public abstract class CVMAbstractScene extends Scene {
 							((ManagedUpdateListener)sprite).managedUpdate(pSecondsElapsed, gameActivity, CVMAbstractScene.this);
 						}
 					}
+
+					if (sprite instanceof CollisionListener) {
+						if (CVMAbstractScene.this.state == State.Started) {
+							for (int i = 0; i < CVMAbstractScene.this.getChildCount(); i++) {
+								if (CVMAbstractScene.this.getChildByIndex(i).getUserData() instanceof CVMSprite &&
+									this != CVMAbstractScene.this.getChildByIndex(i)) {
+									CVMSprite tmp = (CVMSprite)CVMAbstractScene.this.getChildByIndex(i).getUserData();
+									
+									if (this.collidesWith((Sprite)CVMAbstractScene.this.getChildByIndex(i))) {
+										((CollisionListener)sprite).collidedWith(gameActivity, CVMAbstractScene.this, tmp);
+										break;
+									}
+								}
+							}
+						}
+					}
 					
 					super.onManagedUpdate(pSecondsElapsed);
 			    }
@@ -243,6 +264,22 @@ public abstract class CVMAbstractScene extends Scene {
 					if (sprite instanceof ManagedUpdateListener) {
 						if (CVMAbstractScene.this.state == State.Started) {
 							((ManagedUpdateListener)sprite).managedUpdate(pSecondsElapsed, gameActivity, CVMAbstractScene.this);
+						}
+					}
+
+					if (sprite instanceof CollisionListener) {
+						if (CVMAbstractScene.this.state == State.Started) {
+							for (int i = 0; i < CVMAbstractScene.this.getChildCount(); i++) {
+								if (CVMAbstractScene.this.getChildByIndex(i).getUserData() instanceof CVMSprite &&
+									this != CVMAbstractScene.this.getChildByIndex(i)) {
+									CVMSprite tmp = (CVMSprite)CVMAbstractScene.this.getChildByIndex(i).getUserData();
+									
+									if (this.collidesWith((Sprite)CVMAbstractScene.this.getChildByIndex(i))) {
+										((CollisionListener)sprite).collidedWith(gameActivity, CVMAbstractScene.this, tmp);
+										break;
+									}
+								}
+							}
 						}
 					}
 					
@@ -370,5 +407,17 @@ public abstract class CVMAbstractScene extends Scene {
 	
 	public VertexBufferObjectManager getVertexBufferObjectManager() {
 		return vertexBufferObjectManager;
+	}
+	
+	public void stopMusic() {
+		if (music != null) {
+			music.pause();
+		}
+	}
+	
+	public void playMusic() {
+		if (music != null) {
+			music.play();
+		}
 	}
 }

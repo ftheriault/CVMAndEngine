@@ -14,6 +14,7 @@ import android.util.Log;
 import ca.qc.cvm.cvmandengine.CVMSoundManager;
 import ca.qc.cvm.cvmandengine.CVMTextureManager;
 import ca.qc.cvm.cvmandengine.scene.CVMAbstractScene;
+import ca.qc.cvm.cvmandengine.scene.CVMAbstractScene.State;
 
 public class CVMGameActivity extends SimpleBaseGameActivity {
 	public static final int CAMERA_WIDTH = 800;
@@ -192,22 +193,35 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
     @Override
     public void onPause() {
     	super.onPause();
-
-    	Scene scene = this.mEngine.getScene();
     	
-        if(scene != null && scene.hasChildScene()){
-        	((CVMAbstractScene)scene.getChildScene()).stop();
-        }
+    	CVMAbstractScene scene = null;
+		
+		for (CVMAbstractScene tmp : sceneList) {
+			if (tmp.getId() == currentSceneId) {
+				scene = tmp;
+				break;
+			}
+		}
+		
+		scene.stopMusic();
     }
     
     @Override
     public void onResume() {
     	super.onResume();
-
-    	Scene scene = this.mEngine.getScene();
-        if(scene != null && scene.hasChildScene()){
-        	((CVMAbstractScene)scene.getChildScene()).start();
-        }
+    	
+    	CVMAbstractScene scene = null;
+		
+		for (CVMAbstractScene tmp : sceneList) {
+			if (tmp.getId() == currentSceneId) {
+				scene = tmp;
+				break;
+			}
+		}
+		
+		if (scene.getState() == State.Started) {
+			scene.playMusic();
+		}
     }
 
 }
