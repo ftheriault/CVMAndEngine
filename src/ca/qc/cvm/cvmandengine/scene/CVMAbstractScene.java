@@ -55,7 +55,7 @@ public abstract class CVMAbstractScene extends Scene {
 	protected VertexBufferObjectManager vertexBufferObjectManager; 
 
 	private String backgroundPath;
-    public static TextureRegion backgroundTexture;
+    public TextureRegion backgroundTexture;
     private RunnableHandler runnableRemoveHandler;
     
     private List<CVMSprite> spriteList;
@@ -160,7 +160,8 @@ public abstract class CVMAbstractScene extends Scene {
     	defaultFont.load();
 	    
 	    for (CVMText text : textList) {
-	    	Font customFont = new Font(engine.getFontManager(), defaultFontTexture, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), text.getSize(), true, text.getColor());
+		    BitmapTextureAtlas fontTexture = new BitmapTextureAtlas(engine.getTextureManager(), 256, 256, TextureOptions.BILINEAR);
+	    	Font customFont = new Font(engine.getFontManager(), fontTexture, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), text.getSize(), true, text.getColor());
 	    	customFont.load();
 	    	text.setFont(customFont);
 	    }
@@ -171,7 +172,10 @@ public abstract class CVMAbstractScene extends Scene {
             @Override
             public void run() {
             	if (text.getFont() == null) {
-            		text.setFont(defaultFont);
+        		    BitmapTextureAtlas fontTexture = new BitmapTextureAtlas(gameActivity.getEngine().getTextureManager(), 256, 256, TextureOptions.BILINEAR);
+        	    	Font customFont = new Font(gameActivity.getEngine().getFontManager(), fontTexture, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), text.getSize(), true, text.getColor());
+        	    	customFont.load();
+            		text.setFont(customFont);
             	}
             	
 			    Text txt = new Text(text.getPosX(), text.getPosY(), text.getFont(), text.getDisplayText(), new TextOptions(HorizontalAlign.LEFT), gameActivity.getVertexBufferObjectManager());
