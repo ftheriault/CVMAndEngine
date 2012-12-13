@@ -86,6 +86,10 @@ public abstract class CVMAbstractScene extends Scene {
 		return state;
 	}
 	
+	public CVMGameActivity getActivity() {
+		return gameActivity;
+	}
+	
 	public void addSprite(CVMSprite sprite) {
 		if (state == State.Stopped) {
 			spriteList.add(sprite);
@@ -337,6 +341,11 @@ public abstract class CVMAbstractScene extends Scene {
 				entitiesToRemove.clear();
             }
 		});
+	}
+	
+	public void setBackground(int textureId) {
+        SpriteBackground bg = new SpriteBackground(new Sprite(0, 0, cvmTextureManager.getTextureById(textureId), vertexBufferObjectManager));
+        this.setBackground(bg);
 	}
 	
 	private void populate() {
