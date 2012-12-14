@@ -58,6 +58,8 @@ public abstract class CVMAbstractScene extends Scene {
 	private String backgroundPath;
     public TextureRegion backgroundTexture;
     private RunnableHandler runnableRemoveHandler;
+    private Engine engine;
+    private Context context;
     
     private List<CVMSprite> spriteList;
     private List<CVMText> textList;
@@ -151,6 +153,8 @@ public abstract class CVMAbstractScene extends Scene {
 	
 	public void load(TextureManager manager, Context context, Engine engine, CVMTextureManager cvmTextureManager) throws IllegalStateException, IOException {
 		this.cvmTextureManager = cvmTextureManager;
+		this.engine = engine;
+		this.context = context;
 		
 		// Load background texture
 		BitmapTextureAtlas mBackgroundTexture = new BitmapTextureAtlas(manager, CVMGameActivity.CAMERA_WIDTH, CVMGameActivity.CAMERA_HEIGHT, TextureOptions.DEFAULT);
@@ -404,9 +408,29 @@ public abstract class CVMAbstractScene extends Scene {
 		this.backgroundPath = backgroundPath;
 	}
 	
-	protected void setMusicPath(String path, boolean loop) {
-		this.musicPath = path;
-		this.musicLoop = loop;
+	public void setMusicPath(String path, boolean loop) {
+		if (state == State.Stopped) {
+			this.musicPath = path;
+			this.musicLoop = loop;
+		}
+		else if (state == State.Started) {
+			if (music != null) {
+				music.stop();
+			}
+
+			if (path != null) {
+				this.musicPath = path;
+				this.musicLoop = loop;
+				
+				try {
+					music = MusicFactory.createMusicFromAsset(engine.getMusicManager(), context, musicPath);
+					music.setLooping(musicLoop);
+					music.play();
+				} catch (Exception e) {
+					Log.e("CVMAndEngine", "setMusic", e);
+				}
+			}
+		}
 	}
 	
 	public int getId() {
