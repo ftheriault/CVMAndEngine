@@ -1,7 +1,10 @@
 package ca.qc.cvm.cvmandengine.ui;
 
+import java.io.IOException;
 import java.util.List;
 
+import org.andengine.audio.music.Music;
+import org.andengine.audio.music.MusicFactory;
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
@@ -23,6 +26,10 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
 	public static final int CAMERA_HEIGHT = 480;
  
     private Camera mCamera;
+    
+	private Music music;
+	private String musicPath;
+	private boolean musicLoop;
     
     private List<CVMAbstractScene> sceneList;
     private int currentSceneId;
@@ -64,12 +71,14 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
 		}
 
 		scene.clearChildScene();
-        scene.start();
+		scene.back();
         
 		currentSceneId = id;
 		
-		Log.i("CVMAndEngine", "Set main scene" + id);
+		Log.i("CVMAndEngine", "Set main scene #" + id);
 		this.mEngine.setScene(scene);
+		
+        scene.start();
 	}
 	
 	public void changeScene(int id, boolean isChildScene) {
@@ -211,12 +220,20 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
 			}
 		}
 		
+		if(music != null){
+    		music.pause();
+    	}
+		
 		scene.stopMusic();
     }
     
     @Override
     public void onResume() {
     	super.onResume();
+    	
+		if(music != null){
+    		music.play();
+    	}
     	
     	CVMAbstractScene scene = null;
 		
@@ -232,4 +249,39 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
 		}
     }
 
+    public void setMusic(String path){
+    	if(music != null){
+    		music.stop();
+    	}
+    	
+    	this.musicPath = path;
+    	
+    	if (musicPath != null) {
+	    	try {
+				music = MusicFactory.createMusicFromAsset(this.mEngine.getMusicManager(), this, musicPath);
+				music.setLooping(true);
+				music.play();
+			} catch (IllegalStateException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+    	}
+    }
+    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
