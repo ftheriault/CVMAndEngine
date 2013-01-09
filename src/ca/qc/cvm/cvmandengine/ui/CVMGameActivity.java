@@ -9,7 +9,6 @@ import org.andengine.engine.camera.Camera;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
-import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.scene.Scene;
 import org.andengine.input.touch.controller.MultiTouch;
 import org.andengine.input.touch.controller.MultiTouchController;
@@ -30,7 +29,6 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
     
 	private Music music;
 	private String musicPath;
-	private boolean musicLoop;
     
     private List<CVMAbstractScene> sceneList;
     private int currentSceneId;
@@ -251,7 +249,7 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
     }
 
     public void setMusic(String path){
-    	if(musicPath != null || !musicPath.equals(path)){
+    	if(musicPath == null || !musicPath.equals(path)){
 	    	if(music != null){
 	    		music.stop();
 	    	}
@@ -281,6 +279,7 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
 	public void stopMusic() {
 		if (music != null) {
 			music.stop();
+			musicPath = null;
 		}
 	}
 	
