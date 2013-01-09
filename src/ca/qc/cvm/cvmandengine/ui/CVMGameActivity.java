@@ -8,6 +8,7 @@ import org.andengine.audio.music.MusicFactory;
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
+import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.scene.Scene;
 import org.andengine.input.touch.controller.MultiTouch;
@@ -129,7 +130,7 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
 		this.mCamera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
  
         EngineOptions options = new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, 
-        							new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), this.mCamera);
+        							new FillResolutionPolicy(), this.mCamera);
         
         options.getAudioOptions().setNeedsSound(true);
         options.getAudioOptions().setNeedsMusic(true);
@@ -250,24 +251,44 @@ public class CVMGameActivity extends SimpleBaseGameActivity {
     }
 
     public void setMusic(String path){
-    	if(music != null){
-    		music.stop();
-    	}
+    	if(musicPath != null || !musicPath.equals(path)){
+	    	if(music != null){
+	    		music.stop();
+	    	}
     	
-    	this.musicPath = path;
-    	
-    	if (musicPath != null) {
-	    	try {
-				music = MusicFactory.createMusicFromAsset(this.mEngine.getMusicManager(), this, musicPath);
-				music.setLooping(true);
-				music.play();
-			} catch (IllegalStateException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+	    	this.musicPath = path;
+	    	
+	    	if (musicPath != null) {
+		    	try {
+					music = MusicFactory.createMusicFromAsset(this.mEngine.getMusicManager(), this, musicPath);
+					music.setLooping(true);
+					music.play();
+				} catch (IllegalStateException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+	    	}
     	}
     }
+    
+    public void pauseMusic() {
+		if (music != null) {
+			music.pause();
+		}
+	}
+	
+	public void stopMusic() {
+		if (music != null) {
+			music.stop();
+		}
+	}
+	
+	public void playMusic() {
+		if (music != null) {
+			music.play();
+		}
+	}
     
 }
 
