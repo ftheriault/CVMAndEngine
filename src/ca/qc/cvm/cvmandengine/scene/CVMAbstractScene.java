@@ -26,7 +26,9 @@ import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegion
 import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
+import org.andengine.ui.dialog.StringInputDialogBuilder;
 import org.andengine.util.HorizontalAlign;
+import org.andengine.util.call.Callback;
 import org.andengine.util.color.Color;
 
 import ca.qc.cvm.cvmandengine.CVMTextureManager;
@@ -37,7 +39,10 @@ import ca.qc.cvm.cvmandengine.entity.ManagedUpdateListener;
 import ca.qc.cvm.cvmandengine.entity.TouchAreaListener;
 import ca.qc.cvm.cvmandengine.ui.CVMGameActivity;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.graphics.Typeface;
 import android.util.Log;
 
@@ -67,6 +72,8 @@ public abstract class CVMAbstractScene extends Scene {
     private List<IEntity> entitiesToRemove;
     
     private Font defaultFont;
+    
+    private Dialog dialog;
 	
 	public CVMAbstractScene(String backgroundPath, int id) {
 		this.backgroundPath = backgroundPath;
@@ -83,6 +90,40 @@ public abstract class CVMAbstractScene extends Scene {
         registerUpdateHandler(runnableRemoveHandler);
 
 	}
+	
+	public void createInputDialog(final int titleResourceId, final int messageResourceId, final int errorMessageId) {
+		this.gameActivity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				dialog = new StringInputDialogBuilder(context,
+					titleResourceId,
+					messageResourceId,
+					errorMessageId,
+					android.R.drawable.ic_menu_info_details,
+						new Callback<String>() {
+							@Override
+							public void onCallback(String arg0) {
+								dialog.hide();
+								dialogClosing(arg0);
+							}
+						}
+					, 	new OnCancelListener(){
+							@Override
+							public void onCancel(DialogInterface dialog) {
+								dialogCanceled();
+							} }).create();
+						dialog.show();
+					}
+				});
+	}
+	
+	public void dialogClosing(String data) {
+		// To be redefined in children
+	}
+	
+	public void dialogCanceled() {
+		// To be redefined in children
+	}	
 	
 	public State getState() {
 		return state;
