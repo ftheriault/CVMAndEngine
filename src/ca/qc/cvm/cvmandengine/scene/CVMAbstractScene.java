@@ -11,6 +11,7 @@ import org.andengine.engine.handler.runnable.RunnableHandler;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.scene.ITouchArea;
 import org.andengine.entity.scene.Scene;
+import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.scene.background.SpriteBackground;
 import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.Sprite;
@@ -62,6 +63,9 @@ public abstract class CVMAbstractScene extends Scene {
 
 	private String backgroundPath;
     public TextureRegion backgroundTexture;
+    
+    private float red, green ,blue;
+    
     private RunnableHandler runnableRemoveHandler;
     private Engine engine;
     private Context context;
@@ -79,6 +83,26 @@ public abstract class CVMAbstractScene extends Scene {
 		this.backgroundPath = backgroundPath;
 		this.id = id;
 		this.state = State.Stopped;
+		
+		spriteList = new ArrayList<CVMSprite>();
+		textList = new ArrayList<CVMText>();
+		
+		entitiesToRemove = new ArrayList<IEntity>();
+		
+		runnableRemoveHandler = new RunnableHandler();
+		
+        registerUpdateHandler(runnableRemoveHandler);
+
+	}
+	
+	public CVMAbstractScene(float red, float green, float blue, int id) {
+		this.backgroundPath = null;
+		this.id = id;
+		this.state = State.Stopped;
+		
+		this.red = red;
+		this.green = green;
+		this.blue = blue;
 		
 		spriteList = new ArrayList<CVMSprite>();
 		textList = new ArrayList<CVMText>();
@@ -197,12 +221,13 @@ public abstract class CVMAbstractScene extends Scene {
 		this.engine = engine;
 		this.context = context;
 		
-		// Load background texture
-		BitmapTextureAtlas mBackgroundTexture = new BitmapTextureAtlas(manager, CVMGameActivity.CAMERA_WIDTH, CVMGameActivity.CAMERA_HEIGHT, TextureOptions.DEFAULT);
-		backgroundTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mBackgroundTexture, context, backgroundPath, 0, 0);
-
-	    manager.loadTexture(mBackgroundTexture);
-
+		if(this.backgroundPath != null){
+			// Load background texture
+			BitmapTextureAtlas mBackgroundTexture = new BitmapTextureAtlas(manager, CVMGameActivity.CAMERA_WIDTH, CVMGameActivity.CAMERA_HEIGHT, TextureOptions.DEFAULT);
+			backgroundTexture = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mBackgroundTexture, context, backgroundPath, 0, 0);
+	
+		    manager.loadTexture(mBackgroundTexture);
+		}
 		// Define music
 	    if (musicPath != null) {
 	    	music = MusicFactory.createMusicFromAsset(engine.getMusicManager(), context, musicPath);
@@ -394,9 +419,14 @@ public abstract class CVMAbstractScene extends Scene {
 	}
 	
 	private void populate() {
-        SpriteBackground bg = new SpriteBackground(new Sprite(0, 0, backgroundTexture, vertexBufferObjectManager));
-        this.setBackground(bg);
-        
+		if(this.backgroundPath != null){
+	        SpriteBackground bg = new SpriteBackground(new Sprite(0, 0, backgroundTexture, vertexBufferObjectManager));
+	        this.setBackground(bg);
+		}
+		else{
+			Background bg = new Background(red, green ,blue);
+			this.setBackground(bg);
+		}
 		runnableRemoveHandler.postRunnable(new Runnable() {
             @Override
             public void run() {
