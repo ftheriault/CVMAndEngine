@@ -228,6 +228,10 @@ public abstract class CVMGameActivity extends SimpleBaseGameActivity {
 			music.play();
 		}
 	}
+	
+	public Camera getCamera(){
+		return this.mCamera;
+	}
     
 }
 
