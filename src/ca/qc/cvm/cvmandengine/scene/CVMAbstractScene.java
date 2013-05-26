@@ -363,6 +363,9 @@ public abstract class CVMAbstractScene extends Scene {
 		sprite.setSprite(tmp);
 		this.attachChild(tmp);
 		
+		this.setTouchAreaBindingOnActionDownEnabled(true);
+		this.setTouchAreaBindingOnActionMoveEnabled(true);
+		
 		Log.i("CVMAndEngine", "Scene #" + CVMAbstractScene.this.getId() + " added an entity");
 		
 		if (sprite instanceof TouchAreaListener) {
@@ -487,6 +490,7 @@ public abstract class CVMAbstractScene extends Scene {
 		else if (state == State.Started) {
 			if (music != null) {
 				music.stop();
+				music.release();
 			}
 
 			if (path != null) {

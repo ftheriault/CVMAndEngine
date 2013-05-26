@@ -33,14 +33,6 @@ public class CVMText {
 	public int getPosY() {
 		return posY;
 	}
-	
-	public void setPosX(int posX){
-		this.posX = posX;
-	}
-	
-	public void setPosY(int posY){
-		this.posY = posY;
-	}
 
 	public String getDisplayText() {
 		return displayText;
@@ -66,6 +58,12 @@ public class CVMText {
 		this.text = text;
 		if (text != null) {
 			text.setUserData(this);
+		}
+	}
+	
+	public void setPosition(float pX, float pY){
+		if(text != null){
+			this.text.setPosition(pX, pY);
 		}
 	}
 }

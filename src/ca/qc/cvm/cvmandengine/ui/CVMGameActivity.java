@@ -192,6 +192,7 @@ public abstract class CVMGameActivity extends SimpleBaseGameActivity {
     	if(musicPath == null || !musicPath.equals(path)){
 	    	if(music != null){
 	    		music.stop();
+	    		music.release();
 	    	}
     	
 	    	this.musicPath = path;
