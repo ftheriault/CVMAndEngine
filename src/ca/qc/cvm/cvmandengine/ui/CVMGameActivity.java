@@ -6,13 +6,15 @@ import java.util.List;
 import org.andengine.audio.music.Music;
 import org.andengine.audio.music.MusicFactory;
 import org.andengine.engine.camera.Camera;
+import org.andengine.engine.handler.timer.ITimerCallback;
+import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
 import org.andengine.entity.scene.Scene;
 import org.andengine.input.touch.controller.MultiTouch;
 import org.andengine.input.touch.controller.MultiTouchController;
-import org.andengine.ui.activity.SimpleBaseGameActivity;
+import org.andengine.ui.activity.BaseGameActivity;
 
 import android.util.Log;
 
@@ -21,7 +23,7 @@ import ca.qc.cvm.cvmandengine.CVMTextureManager;
 import ca.qc.cvm.cvmandengine.scene.CVMAbstractScene;
 import ca.qc.cvm.cvmandengine.scene.CVMAbstractScene.State;
 
-public abstract class CVMGameActivity extends SimpleBaseGameActivity {
+public abstract class CVMGameActivity extends BaseGameActivity {
 	public static final int CAMERA_WIDTH = 800;
 	public static final int CAMERA_HEIGHT = 480;
  
@@ -98,7 +100,9 @@ public abstract class CVMGameActivity extends SimpleBaseGameActivity {
 	}
 
 	@Override
-	protected void onCreateResources() {
+	public void onCreateResources(
+			OnCreateResourcesCallback pOnCreateResourcesCallback)
+			throws Exception  {
 		try {
 	    	
 	    	if(MultiTouch.isSupported(this)) {
@@ -107,40 +111,67 @@ public abstract class CVMGameActivity extends SimpleBaseGameActivity {
 	    	
 			textureManager.load(this.mEngine.getTextureManager(), this);
 			
-			for (CVMAbstractScene scene : sceneList) {
-				scene.prepare(getVertexBufferObjectManager(), this);
-				scene.load(this.mEngine.getTextureManager(), this, this.mEngine, textureManager);
-			}
-			
-			if (soundManager != null) {
-				soundManager.load(this.mEngine.getSoundManager(), this);
-			}
+			CVMAbstractScene scene = sceneList.get(0);
+			scene.prepare(getVertexBufferObjectManager(), this);
+			scene.load(this.mEngine.getTextureManager(), this, this.mEngine, textureManager);
+			scene.start();
+			this.mEngine.setScene(scene);
+			Log.e("Scene ID IS"," " + scene.getId());
 
 		} catch (Exception e) {
 			Log.e("CVMAndEngine", "CVMAbstractScene", e);
 		}
+		
+		pOnCreateResourcesCallback.onCreateResourcesFinished();
 	}
 
 	@Override
-	protected Scene onCreateScene() {
-		CVMAbstractScene scene = null;
-		
-		for (CVMAbstractScene tmp : sceneList) {
-			if (tmp.getId() == currentSceneId) {
-				scene = tmp;
-				break;
+	public void onCreateScene(OnCreateSceneCallback pOnCreateSceneCallback)
+			throws Exception {
+        pOnCreateSceneCallback.onCreateSceneFinished(sceneList.get(0));
+	}
+	
+	@Override
+	public void onPopulateScene(Scene pScene,
+			OnPopulateSceneCallback pOnPopulateSceneCallback) throws Exception {
+	
+		mEngine.registerUpdateHandler(new TimerHandler(1f, new ITimerCallback() 
+		{
+			public void onTimePassed(final TimerHandler pTimerHandler) 
+			{
+				try{
+					mEngine.unregisterUpdateHandler(pTimerHandler);
+					for (CVMAbstractScene scene : sceneList) {
+						if(scene.getId() != currentSceneId){
+							scene.prepare(getVertexBufferObjectManager(), CVMGameActivity.this);
+							scene.load(CVMGameActivity.this.mEngine.getTextureManager(), CVMGameActivity.this, CVMGameActivity.this.mEngine, textureManager);
+						}
+					}
+					
+					if (soundManager != null) {
+						soundManager.load(CVMGameActivity.this.mEngine.getSoundManager(), CVMGameActivity.this);
+					}
+					
+					CVMAbstractScene scene = sceneList.get(1);
+					currentSceneId = scene.getId();
+					
+					scene.prepare(getVertexBufferObjectManager(), CVMGameActivity.this);
+					scene.start();
+					Log.e("Scene ID IS"," " + scene.getId());
+					CVMGameActivity.this.mEngine.setScene(scene);
+				}
+				catch(IOException e){
+					Log.e("Populate","CVMGameActivity",e);
+				}
 			}
-		}
+		}));
 		
-		scene.prepare(getVertexBufferObjectManager(), this);
-		scene.start();
-        this.mEngine.setScene(scene);
-        
-        return this.mEngine.getScene();
+		pOnPopulateSceneCallback.onPopulateSceneFinished();
+
 	}
 	
 	public abstract void backPressed();
-	;
+	
 	@Override
 	public void onBackPressed(){
 		backPressed();
